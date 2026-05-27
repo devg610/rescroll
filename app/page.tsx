@@ -2,24 +2,36 @@ export default function Home() {
   return (
     <main
       className="flex flex-1 flex-col items-center justify-center px-6"
-      style={{ backgroundColor: "#0a0a0a" }}
+      style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
-      <h1 className="font-serif italic text-7xl sm:text-8xl text-zinc-100 tracking-tight">
+      <h1
+        className="text-7xl sm:text-8xl tracking-tight"
+        style={{ color: "var(--foreground)", fontWeight: 700 }}
+      >
         Rescroll
       </h1>
-      <p className="mt-4 font-mono text-sm text-zinc-400">
+      <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
         your likes, through time.
       </p>
       <form className="mt-10 flex w-full max-w-md flex-col gap-3 sm:flex-row">
         <input
           type="email"
           placeholder="you@example.com"
-          className="flex-1 rounded border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-600 focus:outline-none"
+          className="flex-1 px-4 py-2.5 text-sm focus:outline-none"
+          style={{
+            backgroundColor: "var(--input-bg)",
+            color: "var(--foreground)",
+            border: "1px solid var(--border)",
+          }}
         />
         <button
           type="submit"
-          className="rounded border border-transparent px-5 py-2.5 text-sm font-medium text-zinc-950 transition-opacity hover:opacity-90"
-          style={{ backgroundColor: "#c8f542" }}
+          className="px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90"
+          style={{
+            backgroundColor: "#1D9BF0",
+            color: "#FFFFFF",
+            border: "none",
+          }}
         >
           Get Early Access
         </button>

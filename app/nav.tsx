@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const TABS = [
   { href: "/", label: "Home" },
@@ -10,13 +11,36 @@ const TABS = [
 
 export default function Nav() {
   const pathname = usePathname();
+  const [isDark, setIsDark] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"));
+    setMounted(true);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    setIsDark(next);
+    if (next) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   if (pathname === "/pin") return null;
 
   return (
     <nav
-      className="flex items-center gap-6 px-6 h-12 bg-black border-b font-mono text-sm"
-      style={{ borderColor: "#1f1f1f" }}
+      className="flex items-center gap-6 px-6 h-12 text-sm"
+      style={{
+        backgroundColor: "var(--background)",
+        color: "var(--foreground)",
+        borderBottom: "1px solid var(--border)",
+      }}
     >
       {TABS.map((tab) => {
         const active =
@@ -26,18 +50,32 @@ export default function Nav() {
             key={tab.href}
             href={tab.href}
             className="relative h-full flex items-center transition-colors"
-            style={{ color: active ? "#c8f542" : "#a1a1aa" }}
+            style={{ color: active ? "#1D9BF0" : "var(--muted)" }}
           >
             {tab.label}
             {active && (
               <span
                 className="absolute left-0 right-0 bottom-0 h-px"
-                style={{ backgroundColor: "#c8f542" }}
+                style={{ backgroundColor: "#1D9BF0" }}
               />
             )}
           </Link>
         );
       })}
+
+      <button
+        type="button"
+        onClick={toggleTheme}
+        aria-label="Toggle color theme"
+        className="ml-auto h-7 w-7 flex items-center justify-center text-base leading-none transition-opacity hover:opacity-70"
+        style={{
+          color: "var(--foreground)",
+          background: "transparent",
+          border: "none",
+        }}
+      >
+        {mounted ? (isDark ? "☀" : "☾") : ""}
+      </button>
     </nav>
   );
 }

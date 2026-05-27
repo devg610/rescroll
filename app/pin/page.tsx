@@ -48,12 +48,21 @@ export default function PinPage() {
   return (
     <main
       className="fixed inset-0 flex flex-col items-center px-6 pt-24"
-      style={{ backgroundColor: "#0a0a0a" }}
+      style={{
+        backgroundColor: "var(--background)",
+        color: "var(--foreground)",
+      }}
     >
-      <h1 className="font-serif italic text-6xl text-zinc-100 tracking-tight">
+      <h1
+        className="text-6xl tracking-tight"
+        style={{ color: "var(--foreground)", fontWeight: 700 }}
+      >
         Rescroll
       </h1>
-      <p className="mt-3 font-mono text-xs text-zinc-500 lowercase tracking-widest">
+      <p
+        className="mt-3 text-xs lowercase tracking-widest"
+        style={{ color: "var(--muted)" }}
+      >
         enter pin
       </p>
 
@@ -75,24 +84,22 @@ export default function PinPage() {
           />
           <div className="flex gap-3">
             {[0, 1, 2, 3].map((i) => {
-              const filled = i < pin.length;
+              const isCursor = pin.length === i && !submitting;
               return (
                 <div
                   key={i}
-                  className="h-14 w-12 rounded border bg-transparent flex items-center justify-center transition-colors"
+                  className="h-14 w-12 bg-transparent flex items-center justify-center transition-colors"
                   style={{
-                    borderColor:
-                      pin.length === i && !submitting ? "#c8f542" : "#262626",
-                    boxShadow:
-                      pin.length === i && !submitting
-                        ? "0 0 0 1px #c8f542"
-                        : "none",
+                    border: `1px solid ${
+                      isCursor ? "#1D9BF0" : "var(--border)"
+                    }`,
+                    boxShadow: isCursor ? "0 0 0 1px #1D9BF0" : "none",
                   }}
                 >
-                  {filled && (
+                  {i < pin.length && (
                     <span
-                      className="block h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: "#e4e4e7" }}
+                      className="block h-2.5 w-2.5"
+                      style={{ backgroundColor: "var(--foreground)" }}
                     />
                   )}
                 </div>
@@ -102,7 +109,10 @@ export default function PinPage() {
         </div>
 
         {error && (
-          <p className="mt-6 font-mono text-xs text-red-500 lowercase tracking-widest">
+          <p
+            className="mt-6 text-xs lowercase tracking-widest"
+            style={{ color: "var(--error)" }}
+          >
             incorrect
           </p>
         )}

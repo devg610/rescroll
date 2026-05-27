@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Chirp";
+  src: url("https://abs.twimg.com/responsive-web/client-web/chirp-regular-web.woff2")
+    format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Chirp";
+  src: url("https://abs.twimg.com/responsive-web/client-web/chirp-bold-web.woff2")
+    format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
+  --muted: #536471;
+  --subtle: #8b98a5;
+  --border: #eff3f4;
+  --button-bg: #000000;
+  --button-fg: #ffffff;
+  --input-bg: #ffffff;
+  --accent: #1d9bf0;
+  --accent-fg: #ffffff;
+  --error: #f4212e;
+}
+
+html.dark {
+  --background: #000000;
+  --foreground: #ffffff;
+  --muted: #71767b;
+  --subtle: #71767b;
+  --border: #2f3336;
+  --button-bg: #ffffff;
+  --button-fg: #000000;
+  --input-bg: #000000;
+  --accent: #1d9bf0;
+  --accent-fg: #ffffff;
+  --error: #f4212e;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --font-sans: "Chirp", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Chirp", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
 }
