@@ -33,7 +33,7 @@ function runClaudeCode(chatId, instruction) {
     instruction
   ], {
     cwd: PROJECT_DIR,
-    env: { ...process.env, ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY }
+    env: { ...process.env, ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY, HOME: '/home/dev' }
   });
 
   let output = '';
