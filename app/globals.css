@@ -102,13 +102,13 @@ html.dark .logo-light {
   width: auto;
   background: none;
   border: none;
-  animation: wordmark-scroll 10s infinite;
+  animation: wordmark-scroll 6s infinite;
 }
 
 .scrollbar-track {
   width: 3px;
   height: 90px;
-  background-color: #00000000;
+  background-color: #333;
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
