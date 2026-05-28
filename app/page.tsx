@@ -6,7 +6,7 @@ export default function Home() {
       className="flex flex-1 flex-col items-center justify-center px-6"
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-4">
         {/* Icon - static */}
         <Image
           src="/logo-black.svg"
@@ -35,7 +35,7 @@ export default function Home() {
           height={2290}
           priority
           className="logo-light"
-          style={{ height: 120, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
+          style={{ height: 100, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
         />
         <Image
           src="/animationlogotextonly-white.svg"
@@ -44,7 +44,7 @@ export default function Home() {
           height={2290}
           priority
           className="logo-dark"
-          style={{ height: 120, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
+          style={{ height: 100, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
         />
       </div>
       <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
