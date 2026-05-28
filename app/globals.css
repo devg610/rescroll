@@ -104,7 +104,7 @@ html.dark .logo-light {
 
 .wordmark-image {
   display: block;
-  height: clamp(48px, 7vw, 9px);
+  height: clamp(48px, 7vw, 90px);
   width: auto;
   background: none;
   border: none;
