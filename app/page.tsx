@@ -35,7 +35,7 @@ export default function Home() {
           height={2290}
           priority
           className="logo-light"
-          style={{ height: 160, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
+          style={{ height: 120, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
         />
         <Image
           src="/animationlogotextonly-white.svg"
@@ -44,7 +44,7 @@ export default function Home() {
           height={2290}
           priority
           className="logo-dark"
-          style={{ height: 160, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
+          style={{ height: 120, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
         />
       </div>
       <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
