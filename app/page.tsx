@@ -18,7 +18,7 @@ export default function Home() {
           width={2000}
           height={2000}
           priority
-          className="logo-light"
+          className="logo-light lockup-logo"
           style={{ height: 160, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
         />
         <Image
@@ -27,7 +27,7 @@ export default function Home() {
           width={2000}
           height={2000}
           priority
-          className="logo-dark"
+          className="logo-dark lockup-logo"
           style={{ height: 160, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
         />
 

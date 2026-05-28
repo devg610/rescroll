@@ -93,14 +93,14 @@ html.dark .logo-light {
 }
 
 .wordmark-window {
-  height: clamp(40px, 12vw, 160px);
+  height: clamp(40px, 10vw, 160px);
   overflow: hidden;
   position: relative;
 }
 
 .wordmark-image {
   display: block;
-  height: clamp(40px, 12vw, 160px);
+  height: clamp(40px, 10vw, 160px);
   width: auto;
   background: none;
   border: none;
@@ -109,7 +109,7 @@ html.dark .logo-light {
 
 .scrollbar-track {
   width: 3px;
-  height: clamp(40px, 12vw, 160px);
+  height: clamp(40px, 10vw, 160px);
   background-color: #333;
   position: relative;
   overflow: hidden;
@@ -124,6 +124,11 @@ html.dark .logo-light {
   top: 0;
   left: 0;
   animation: scrollbar-thumb 18s infinite;
+}
+
+.lockup-logo {
+  height: clamp(40px, 10vw, 160px) !important;
+  width: auto !important;
 }
 
 @keyframes wordmark-scroll {
