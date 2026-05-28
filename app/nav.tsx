@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -42,6 +43,27 @@ export default function Nav() {
         borderBottom: "1px solid var(--border)",
       }}
     >
+      <Link href="/" aria-label="Rescroll" className="flex items-center">
+        <Image
+          src="/logo-black.svg"
+          alt="Rescroll"
+          width={2000}
+          height={2000}
+          priority
+          className="logo-light"
+          style={{ height: 28, width: "auto", background: "none", border: "none" }}
+        />
+        <Image
+          src="/logo-white.svg"
+          alt="Rescroll"
+          width={2000}
+          height={2000}
+          priority
+          className="logo-dark"
+          style={{ height: 28, width: "auto", background: "none", border: "none" }}
+        />
+      </Link>
+
       {TABS.map((tab) => {
         const active =
           tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);

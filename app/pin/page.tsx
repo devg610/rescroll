@@ -88,7 +88,7 @@ export default function PinPage() {
               return (
                 <div
                   key={i}
-                  className="h-14 w-12 bg-transparent flex items-center justify-center transition-colors"
+                  className="pill h-14 w-12 bg-transparent flex items-center justify-center transition-colors"
                   style={{
                     border: `1px solid ${
                       isCursor ? "#1D9BF0" : "var(--border)"

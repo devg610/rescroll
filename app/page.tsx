@@ -1,15 +1,29 @@
+import Image from "next/image";
+
 export default function Home() {
   return (
     <main
       className="flex flex-1 flex-col items-center justify-center px-6"
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
-      <h1
-        className="text-7xl sm:text-8xl tracking-tight"
-        style={{ color: "var(--foreground)", fontWeight: 700 }}
-      >
-        Rescroll
-      </h1>
+      <Image
+        src="/logo-black.svg"
+        alt="Rescroll"
+        width={2000}
+        height={2000}
+        priority
+        className="logo-light"
+        style={{ height: 48, width: "auto", background: "none", border: "none" }}
+      />
+      <Image
+        src="/logo-white.svg"
+        alt="Rescroll"
+        width={2000}
+        height={2000}
+        priority
+        className="logo-dark"
+        style={{ height: 48, width: "auto", background: "none", border: "none" }}
+      />
       <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
         your likes, through time.
       </p>

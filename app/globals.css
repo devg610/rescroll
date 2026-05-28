@@ -68,3 +68,22 @@ body {
 *::after {
   border-radius: 0 !important;
 }
+
+button,
+input,
+.pill {
+  border-radius: 9999px !important;
+}
+
+.logo-dark {
+  display: none;
+}
+.logo-light {
+  display: block;
+}
+html.dark .logo-dark {
+  display: block;
+}
+html.dark .logo-light {
+  display: none;
+}
