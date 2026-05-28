@@ -7,7 +7,7 @@ export default function Home() {
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
       <Image
-        src="/logo-black.svg"
+        src="/logotext-black.svg"
         alt="Rescroll"
         width={2000}
         height={2000}
@@ -16,7 +16,7 @@ export default function Home() {
         style={{ height: 300, width: "auto", background: "none", border: "none" }}
       />
       <Image
-        src="/logo-white.svg"
+        src="/logotext-white.svg"
         alt="Rescroll"
         width={2000}
         height={2000}
