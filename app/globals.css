@@ -121,7 +121,7 @@ html.dark .logo-light {
   position: absolute;
   top: 0;
   left: 0;
-  animation: scrollbar-thumb 6s infinite;
+  animation: scrollbar-thumb 12s infinite;
 }
 
 @keyframes wordmark-scroll {
