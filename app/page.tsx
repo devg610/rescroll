@@ -6,12 +6,10 @@ export default function Home() {
       className="flex flex-1 flex-col items-center justify-center px-6"
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
-      <div style={{ marginLeft: "3px" }}>
-        <div
-          className="flex items-center justify-center gap-6"
-          style={{ margin: "0 auto", textAlign: "center" }}
-        >
-        {/* Icon - static */}
+      {/* Logo lockup */}
+      <div className="flex items-center gap-6">
+
+        {/* Icon - light mode */}
         <Image
           src="/logo-black.svg"
           alt="Rescroll"
@@ -19,8 +17,9 @@ export default function Home() {
           height={2000}
           priority
           className="logo-light lockup-logo"
-          style={{ height: 160, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
+          style={{ background: "none", border: "none", verticalAlign: "middle" }}
         />
+        {/* Icon - dark mode */}
         <Image
           src="/logo-white.svg"
           alt="Rescroll"
@@ -28,7 +27,7 @@ export default function Home() {
           height={2000}
           priority
           className="logo-dark lockup-logo"
-          style={{ height: 160, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
+          style={{ background: "none", border: "none", verticalAlign: "middle" }}
         />
 
         {/* Animated wordmark - light mode */}
@@ -58,11 +57,15 @@ export default function Home() {
         <div className="scrollbar-track" aria-hidden="true">
           <div className="scrollbar-thumb" />
         </div>
-        </div>
+
       </div>
+
+      {/* Subtitle */}
       <p className="mt-4 text-lg" style={{ color: "var(--subtle)" }}>
         your likes, through time.
       </p>
+
+      {/* Email form */}
       <form className="mt-10 flex w-full max-w-md flex-col gap-3 sm:flex-row">
         <input
           type="email"
