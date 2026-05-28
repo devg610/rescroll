@@ -96,7 +96,6 @@ html.dark .logo-light {
   width: auto !important;
   background: none;
   border: none;
-  animation: wordmark-scroll 18s infinite;
 }
 
 .wordmark-window {

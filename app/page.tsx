@@ -7,29 +7,28 @@ export default function Home() {
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
       {/* Logo lockup */}
-      <div className="flex items-start gap-6">
+      <div className="flex items-center gap-6">
 
-        {/* Icon - clipped animation window */}
-        <div className="icon-window">
-          <Image
-            src="/logo-black.svg"
-            alt="Rescroll"
-            width={2000}
-            height={2000}
-            priority
-            className="logo-light lockup-logo"
-            style={{ background: "none", border: "none" }}
-          />
-          <Image
-            src="/logo-white.svg"
-            alt="Rescroll"
-            width={2000}
-            height={2000}
-            priority
-            className="logo-dark lockup-logo"
-            style={{ background: "none", border: "none" }}
-          />
-        </div>
+        {/* Icon - light mode */}
+        <Image
+          src="/logo-black.svg"
+          alt="Rescroll"
+          width={2000}
+          height={2000}
+          priority
+          className="logo-light lockup-logo"
+          style={{ background: "none", border: "none", verticalAlign: "middle" }}
+        />
+        {/* Icon - dark mode */}
+        <Image
+          src="/logo-white.svg"
+          alt="Rescroll"
+          width={2000}
+          height={2000}
+          priority
+          className="logo-dark lockup-logo"
+          style={{ background: "none", border: "none", verticalAlign: "middle" }}
+        />
 
         {/* Animated wordmark - light mode */}
         <div className="logo-light wordmark-window">
