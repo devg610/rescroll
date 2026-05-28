@@ -91,7 +91,7 @@ html.dark .logo-light {
 }
 
 .wordmark-window {
-  height: 90px;
+  height: 160px;
   overflow: hidden;
   position: relative;
 }
@@ -102,7 +102,7 @@ html.dark .logo-light {
   width: auto;
   background: none;
   border: none;
-  animation: wordmark-scroll 6s infinite;
+  animation: wordmark-scroll 18s infinite;
 }
 
 .scrollbar-track {
@@ -121,19 +121,25 @@ html.dark .logo-light {
   position: absolute;
   top: 0;
   left: 0;
-  animation: scrollbar-thumb 6s infinite;
+  animation: scrollbar-thumb 18s infinite;
 }
 
 @keyframes wordmark-scroll {
-  0%,
+  0% {
+    transform: translateY(0);
+    animation-timing-function: linear;
+  }
   33.33% {
     transform: translateY(0);
+    animation-timing-function: ease-in-out;
   }
   66.66% {
     transform: translateY(-100%);
+    animation-timing-function: linear;
   }
   66.67% {
     transform: translateY(100%);
+    animation-timing-function: ease-in-out;
   }
   100% {
     transform: translateY(0);
@@ -141,17 +147,19 @@ html.dark .logo-light {
 }
 
 @keyframes scrollbar-thumb {
-  0%,
+  0% {
+    transform: translateY(0);
+    animation-timing-function: linear;
+  }
   33.33% {
     transform: translateY(0);
+    animation-timing-function: ease-in-out;
   }
   66.66% {
     transform: translateY(150%);
-  }
-  66.67% {
-    transform: translateY(0);
+    animation-timing-function: ease-in-out;
   }
   100% {
-    transform: translateY(150%);
+    transform: translateY(0);
   }
 }
