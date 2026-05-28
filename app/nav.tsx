@@ -36,7 +36,7 @@ export default function Nav() {
 
   return (
     <nav
-      className="flex items-center gap-6 px-6 h-12 text-sm"
+      className="flex items-center gap-6 px-6 h-14 text-base"
       style={{
         backgroundColor: "var(--background)",
         color: "var(--foreground)",
@@ -51,7 +51,7 @@ export default function Nav() {
           height={2000}
           priority
           className="logo-light"
-          style={{ height: 28, width: "auto", background: "none", border: "none" }}
+          style={{ height: 36, width: "auto", background: "none", border: "none" }}
         />
         <Image
           src="/logo-white.svg"
@@ -60,7 +60,7 @@ export default function Nav() {
           height={2000}
           priority
           className="logo-dark"
-          style={{ height: 28, width: "auto", background: "none", border: "none" }}
+          style={{ height: 36, width: "auto", background: "none", border: "none" }}
         />
       </Link>
 

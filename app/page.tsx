@@ -6,7 +6,10 @@ export default function Home() {
       className="flex flex-1 flex-col items-center justify-center px-6"
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
-      <div className="flex items-center gap-6">
+      <div
+        className="flex items-center justify-center gap-6"
+        style={{ margin: "0 auto", textAlign: "center" }}
+      >
         {/* Icon - static */}
         <Image
           src="/logo-black.svg"
@@ -27,27 +30,35 @@ export default function Home() {
           style={{ height: 160, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
         />
 
-        {/* Wordmark - will animate later */}
-        <Image
-          src="/animationlogotextonly-black.svg"
-          alt="Rescroll"
-          width={7770}
-          height={2290}
-          priority
-          className="logo-light"
-          style={{ height: 90, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
-        />
-        <Image
-          src="/animationlogotextonly-white.svg"
-          alt="Rescroll"
-          width={7770}
-          height={2290}
-          priority
-          className="logo-dark"
-          style={{ height: 90, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
-        />
+        {/* Animated wordmark - light mode */}
+        <div className="logo-light wordmark-window">
+          <Image
+            src="/animationlogotextonly-black.svg"
+            alt="Rescroll"
+            width={7770}
+            height={2290}
+            priority
+            className="wordmark-image"
+          />
+        </div>
+        {/* Animated wordmark - dark mode */}
+        <div className="logo-dark wordmark-window">
+          <Image
+            src="/animationlogotextonly-white.svg"
+            alt="Rescroll"
+            width={7770}
+            height={2290}
+            priority
+            className="wordmark-image"
+          />
+        </div>
+
+        {/* Scrollbar synced with wordmark */}
+        <div className="scrollbar-track" aria-hidden="true">
+          <div className="scrollbar-thumb" />
+        </div>
       </div>
-      <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
+      <p className="mt-4 text-lg" style={{ color: "var(--subtle)" }}>
         your likes, through time.
       </p>
       <form className="mt-10 flex w-full max-w-md flex-col gap-3 sm:flex-row">
