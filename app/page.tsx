@@ -6,10 +6,11 @@ export default function Home() {
       className="flex flex-1 flex-col items-center justify-center px-6"
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
-      <div
-        className="flex items-center justify-center gap-6"
-        style={{ margin: "0 auto", textAlign: "center" }}
-      >
+      <div style={{ marginRight: "-3px" }}>
+        <div
+          className="flex items-center justify-center gap-6"
+          style={{ margin: "0 auto", textAlign: "center" }}
+        >
         {/* Icon - static */}
         <Image
           src="/logo-black.svg"
@@ -57,6 +58,7 @@ export default function Home() {
         <div className="scrollbar-track" aria-hidden="true">
           <div className="scrollbar-thumb" />
         </div>
+      </div>
       </div>
       <p className="mt-4 text-lg" style={{ color: "var(--subtle)" }}>
         your likes, through time.
