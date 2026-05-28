@@ -92,7 +92,7 @@ html.dark .logo-light {
 }
 
 .lockup-logo {
-  height: clamp(48px, 11vw, 120px) !important;
+  height: clamp(48px, 7vw, 120px) !important;
   width: auto !important;
 }
 
