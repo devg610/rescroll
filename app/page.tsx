@@ -6,7 +6,7 @@ export default function Home() {
       className="flex flex-1 flex-col items-center justify-center px-6"
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
-      <div className="flex items-center gap-10px">
+      <div className="flex items-center">
         {/* Icon - static */}
         <Image
           src="/logo-black.svg"
@@ -31,8 +31,8 @@ export default function Home() {
         <Image
           src="/animationlogotextonly-black.svg"
           alt="Rescroll"
-          width={2000}
-          height={2000}
+          width={7770}
+          height={2290}
           priority
           className="logo-light"
           style={{ height: 160, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
@@ -40,8 +40,8 @@ export default function Home() {
         <Image
           src="/animationlogotextonly-white.svg"
           alt="Rescroll"
-          width={2000}
-          height={2000}
+          width={7770}
+          height={2290}
           priority
           className="logo-dark"
           style={{ height: 160, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
