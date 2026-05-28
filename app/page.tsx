@@ -58,7 +58,7 @@ export default function Home() {
         <div className="scrollbar-track" aria-hidden="true">
           <div className="scrollbar-thumb" />
         </div>
-      </div>
+        </div>
       </div>
       <p className="mt-4 text-lg" style={{ color: "var(--subtle)" }}>
         your likes, through time.
