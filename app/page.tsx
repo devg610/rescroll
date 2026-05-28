@@ -29,7 +29,7 @@ export default function Home() {
 
         {/* Wordmark - will animate later */}
         <Image
-          src="/animationlogotextonly-black.png"
+          src="/animationlogotextonly-black.svg"
           alt="Rescroll"
           width={7770}
           height={2290}
@@ -38,7 +38,7 @@ export default function Home() {
           style={{ height: 160, width: "auto", background: "none", border: "none", verticalAlign: "middle" }}
         />
         <Image
-          src="/animationlogotextonly-white.png"
+          src="/animationlogotextonly-white.svg"
           alt="Rescroll"
           width={7770}
           height={2290}
