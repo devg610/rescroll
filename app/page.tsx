@@ -7,7 +7,7 @@ export default function Home() {
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
       {/* Logo lockup */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-start gap-6">
 
         {/* Icon - clipped animation window */}
         <div className="icon-window">

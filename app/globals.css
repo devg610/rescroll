@@ -92,7 +92,7 @@ html.dark .logo-light {
 }
 
 .icon-window {
-  height: clamp(32px, 10vw, 120px);
+  height: clamp(32px, 10vw, 100px);
   width: clamp(36px, 12vw, 140px);
   overflow: hidden;
   position: relative;
