@@ -13,7 +13,7 @@ export default function Home() {
         height={2000}
         priority
         className="logo-light"
-        style={{ height: 1200, width: "auto", background: "none", border: "none" }}
+        style={{ height: 500, width: "auto", background: "none", border: "none" }}
       />
       <Image
         src="/logo-white.svg"
@@ -22,7 +22,7 @@ export default function Home() {
         height={2000}
         priority
         className="logo-dark"
-        style={{ height: 1200, width: "auto", background: "none", border: "none" }}
+        style={{ height: 500, width: "auto", background: "none", border: "none" }}
       />
       <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
         your likes, through time.
