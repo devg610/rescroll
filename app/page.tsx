@@ -6,7 +6,7 @@ export default function Home() {
       className="flex flex-1 flex-col items-center justify-center px-6"
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
-      <div style={{ marginRight: "-3px" }}>
+      <div style={{ marginLeft: "3px" }}>
         <div
           className="flex items-center justify-center gap-6"
           style={{ margin: "0 auto", textAlign: "center" }}
