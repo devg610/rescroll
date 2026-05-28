@@ -92,19 +92,19 @@ html.dark .logo-light {
 }
 
 .lockup-logo {
-  height: clamp(48px, 7vw, 120px) !important;
+  height: clamp(32px, 10vw, 100px) !important;
   width: auto !important;
 }
 
 .wordmark-window {
-  height: clamp(48px, 7vw, 90px);
+  height: clamp(32px, 10vw, 100px);
   overflow: hidden;
   position: relative;
 }
 
 .wordmark-image {
   display: block;
-  height: clamp(48px, 7vw, 90px);
+  height: clamp(32px, 10vw, 100px);
   width: auto;
   background: none;
   border: none;
@@ -113,7 +113,7 @@ html.dark .logo-light {
 
 .scrollbar-track {
   width: 3px;
-  height: clamp(48px, 7vw, 90px);
+  height: clamp(32px, 10vw, 100px);
   background-color: var(--border);
   position: relative;
   overflow: hidden;
