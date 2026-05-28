@@ -91,14 +91,14 @@ html.dark .logo-light {
 }
 
 .wordmark-window {
-  height: 160px;
+  height: 120px;
   overflow: hidden;
   position: relative;
 }
 
 .wordmark-image {
   display: block;
-  height: 160px;
+  height: 120px;
   width: auto;
   background: none;
   border: none;
@@ -107,7 +107,7 @@ html.dark .logo-light {
 
 .scrollbar-track {
   width: 3px;
-  height: 160px;
+  height: 120px;
   background-color: #333;
   position: relative;
   overflow: hidden;
