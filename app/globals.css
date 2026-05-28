@@ -91,6 +91,14 @@ html.dark .logo-light {
   display: none;
 }
 
+.icon-window {
+  height: clamp(32px, 10vw, 120px);
+  width: clamp(32px, 10vw, 120px);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
 .lockup-logo {
   height: clamp(32px, 10vw, 120px) !important;
   width: auto !important;
