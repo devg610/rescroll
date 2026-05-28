@@ -6,7 +6,7 @@ export default function Home() {
       className="flex flex-1 flex-col items-center justify-center px-6"
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-0">
         {/* Icon - static */}
         <Image
           src="/logo-black.svg"
