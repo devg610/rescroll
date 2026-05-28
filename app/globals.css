@@ -114,7 +114,7 @@ html.dark .logo-light {
 .scrollbar-track {
   width: 3px;
   height: clamp(48px, 11vw, 120px);
-  background-color: #333;
+  background-color: var(--border);
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
