@@ -6,24 +6,47 @@ export default function Home() {
       className="flex flex-1 flex-col items-center justify-center px-6"
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
-      <Image
-        src="/logotext-black.svg"
-        alt="Rescroll"
-        width={2000}
-        height={2000}
-        priority
-        className="logo-light"
-        style={{ height: 300, width: "auto", background: "none", border: "none" }}
-      />
-      <Image
-        src="/logotext-white.svg"
-        alt="Rescroll"
-        width={2000}
-        height={2000}
-        priority
-        className="logo-dark"
-        style={{ height: 300, width: "auto", background: "none", border: "none" }}
-      />
+      <div className="flex items-center gap-4">
+        {/* Icon - static */}
+        <Image
+          src="/logo-black.svg"
+          alt="Rescroll"
+          width={2000}
+          height={2000}
+          priority
+          className="logo-light"
+          style={{ height: 120, width: "auto", background: "none", border: "none" }}
+        />
+        <Image
+          src="/logo-white.svg"
+          alt="Rescroll"
+          width={2000}
+          height={2000}
+          priority
+          className="logo-dark"
+          style={{ height: 120, width: "auto", background: "none", border: "none" }}
+        />
+
+        {/* Wordmark - will animate later */}
+        <Image
+          src="/animationlogotextonly-black.svg"
+          alt="Rescroll"
+          width={2000}
+          height={2000}
+          priority
+          className="logo-light"
+          style={{ height: 120, width: "auto", background: "none", border: "none" }}
+        />
+        <Image
+          src="/animationlogotextonly-white.svg"
+          alt="Rescroll"
+          width={2000}
+          height={2000}
+          priority
+          className="logo-dark"
+          style={{ height: 120, width: "auto", background: "none", border: "none" }}
+        />
+      </div>
       <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
         your likes, through time.
       </p>
