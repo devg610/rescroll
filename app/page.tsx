@@ -1,6 +1,18 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 export default function Home() {
+  const [animationDelay, setAnimationDelay] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const offset = (Date.now() / 1000) % 18;
+    setAnimationDelay(`-${offset}s`);
+  }, []);
+
+  const syncStyle = animationDelay ? { animationDelay } : undefined;
+
   return (
     <main
       className="flex flex-1 flex-col items-center justify-center px-6"
@@ -39,6 +51,7 @@ export default function Home() {
             height={2290}
             priority
             className="wordmark-image"
+            style={syncStyle}
           />
         </div>
         {/* Animated wordmark - dark mode */}
@@ -50,12 +63,13 @@ export default function Home() {
             height={2290}
             priority
             className="wordmark-image"
+            style={syncStyle}
           />
         </div>
 
         {/* Scrollbar synced with wordmark */}
         <div className="scrollbar-track" aria-hidden="true">
-          <div className="scrollbar-thumb" />
+          <div className="scrollbar-thumb" style={syncStyle} />
         </div>
 
       </div>
