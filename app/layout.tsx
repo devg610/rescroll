@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: "Your likes, through time.",
 };
 
-const themeInitScript = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'){document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');}})();`;
+const themeInitScript = `(function(){try{document.documentElement.classList.add('dark');localStorage.setItem('theme','dark');}catch(e){document.documentElement.classList.add('dark');}})();`;
 
 export default function RootLayout({
   children,

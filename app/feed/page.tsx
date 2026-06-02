@@ -1,4 +1,7 @@
+"use client";
+
 import Script from "next/script";
+import { useEffect } from "react";
 
 type OEmbedResponse = {
   html: string;
@@ -19,6 +22,19 @@ async function getTweetEmbed(): Promise<OEmbedResponse | null> {
 
 export default async function Feed() {
   const embed = await getTweetEmbed();
+
+  useEffect(() => {
+    const existing = document.getElementById("twitter-widgets-script");
+    if (existing) {
+      existing.remove();
+    }
+    const script = document.createElement("script");
+    script.id = "twitter-widgets-script";
+    script.src = "https://platform.twitter.com/widgets.js";
+    script.async = true;
+    script.charset = "utf-8";
+    document.body.appendChild(script);
+  });
 
   return (
     <main

@@ -85,19 +85,21 @@ export default function Nav() {
         );
       })}
 
-      <button
-        type="button"
-        onClick={toggleTheme}
-        aria-label="Toggle color theme"
-        className="ml-auto h-7 w-7 flex items-center justify-center text-base leading-none transition-opacity hover:opacity-70"
-        style={{
-          color: "var(--foreground)",
-          background: "transparent",
-          border: "none",
-        }}
-      >
-        {mounted ? (isDark ? "☀" : "☾") : ""}
-      </button>
+      <div style={{ display: "none" }}>
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label="Toggle color theme"
+          className="ml-auto h-7 w-7 flex items-center justify-center text-base leading-none transition-opacity hover:opacity-70"
+          style={{
+            color: "var(--foreground)",
+            background: "transparent",
+            border: "none",
+          }}
+        >
+          {mounted ? (isDark ? "☀" : "☾") : ""}
+        </button>
+      </div>
     </nav>
   );
 }
