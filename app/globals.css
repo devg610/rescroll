@@ -148,3 +148,8 @@ html.dark .logo-light {
   72%  { transform: translateY(0); animation-timing-function: ease-in-out; }
   100% { transform: translateY(0); }
 }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
