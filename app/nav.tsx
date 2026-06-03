@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const TABS = [
   { href: "/", label: "Home" },
@@ -12,25 +12,10 @@ const TABS = [
 
 export default function Nav() {
   const pathname = usePathname();
-  const [isDark, setIsDark] = useState(true);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
-    setMounted(true);
+    document.documentElement.classList.add("dark");
   }, []);
-
-  const toggleTheme = () => {
-    const next = !isDark;
-    setIsDark(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  };
 
   if (pathname === "/pin") return null;
 
@@ -84,22 +69,6 @@ export default function Nav() {
           </Link>
         );
       })}
-
-      <div style={{ display: "none" }}>
-        <button
-          type="button"
-          onClick={toggleTheme}
-          aria-label="Toggle color theme"
-          className="ml-auto h-7 w-7 flex items-center justify-center text-base leading-none transition-opacity hover:opacity-70"
-          style={{
-            color: "var(--foreground)",
-            background: "transparent",
-            border: "none",
-          }}
-        >
-          {mounted ? (isDark ? "☀" : "☾") : ""}
-        </button>
-      </div>
     </nav>
   );
 }
