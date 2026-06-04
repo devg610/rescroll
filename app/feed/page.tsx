@@ -5,13 +5,13 @@ import { useEffect, useState } from "react";
 type Tweet = {
   url: string;
   year: number;
-  html?: string;
+  html: string;
 };
 
 export default function Feed() {
   const MOCK_DATE = "January 1";
 
-  const tweets: Tweet[] = [
+  const tweetList = [
     { url: "https://x.com/todaysdaytoday/status/1609535289810206721", year: 2023 },
     { url: "https://x.com/todaysdaytoday/status/1477264082801770497", year: 2022 },
     { url: "https://x.com/nickjfuentes/status/1874335588717125879", year: 2025 },
@@ -36,14 +36,14 @@ export default function Feed() {
   useEffect(() => {
     setLoading(true);
     Promise.all(
-      tweets.map((t) =>
+      tweetList.map((t) =>
         fetch(`https://publish.twitter.com/oembed?url=${t.url}&omit_script=true`)
           .then((r) => r.json())
-          .then((data) => ({ ...t, html: data.html }))
-          .catch(() => ({ ...t, html: null }))
+          .then((data) => ({ ...t, html: data.html as string }))
+          .catch(() => null)
       )
     ).then((results) => {
-      setEmbeds(results.filter((r) => r.html !== null));
+      setEmbeds(results.filter((r): r is Tweet => r !== null && typeof r.html === "string"));
       setLoading(false);
     });
   }, []);
@@ -121,6 +121,7 @@ export default function Feed() {
           On This Day — {MOCK_DATE}
         </h2>
       </div>
+
       {loading && (
         <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto", padding: "16px", border: "1px solid var(--border)", backgroundColor: "var(--background)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
@@ -134,6 +135,7 @@ export default function Feed() {
           <div style={{ height: 14, width: "70%", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
         </div>
       )}
+
       {!loading && sorted.map((t) => (
         <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
           <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
@@ -158,15 +160,7 @@ export default function Feed() {
       <style>{".twitter-tweet { margin: 0 auto !important; width: 100% !important; }"}</style>
 
       {!isDesktop && (
-        <div
-          style={{
-            width: "100%",
-            overflowX: "auto",
-            paddingBottom: "12px",
-            marginBottom: "16px",
-            borderBottom: "1px solid var(--border)",
-          }}
-        >
+        <div style={{ width: "100%", overflowX: "auto", paddingBottom: "12px", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", whiteSpace: "nowrap" }}>
             <div style={{ flexShrink: 0, minWidth: "160px" }}>{viewSelect}</div>
             <span style={{ fontSize: "14px", color: "var(--foreground)", flexShrink: 0 }}>Sort By:</span>
@@ -175,27 +169,12 @@ export default function Feed() {
         </div>
       )}
 
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          minWidth: 0,
-        }}
-      >
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", minWidth: 0 }}>
         {tweetSection}
       </div>
 
       {isDesktop && (
-        <aside
-          style={{
-            width: "240px",
-            flexShrink: 0,
-            padding: "24px 20px 20px 20px",
-            borderLeft: "1px solid var(--border)",
-          }}
-        >
+        <aside style={{ width: "240px", flexShrink: 0, padding: "24px 20px 20px 20px", borderLeft: "1px solid var(--border)" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
             <div>
               <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", color: "var(--foreground)" }}>View</label>
