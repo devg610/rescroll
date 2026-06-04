@@ -21,8 +21,7 @@ export default function Feed() {
   ];
 
   const [embeds, setEmbeds] = useState<Tweet[]>([]);
-  const [fetching, setFetching] = useState(true);
-  const [ready, setReady] = useState(false);
+  const [showContent, setShowContent] = useState(false);
   const [view, setView] = useState("on-this-day");
   const [sortBy, setSortBy] = useState("date-desc");
   const [isDesktop, setIsDesktop] = useState(false);
@@ -35,9 +34,7 @@ export default function Feed() {
   }, []);
 
   useEffect(() => {
-    setFetching(true);
-    setReady(false);
-    const start = Date.now();
+    // Fetch tweets
     Promise.all(
       tweetList.map((t) =>
         fetch(`https://publish.twitter.com/oembed?url=${t.url}&omit_script=true`)
@@ -46,59 +43,33 @@ export default function Feed() {
           .catch(() => null)
       )
     ).then((results) => {
-      const elapsed = Date.now() - start;
-      console.log(`oEmbed fetch took ${elapsed}ms`);
       const valid = results.filter((r): r is Tweet => r !== null && typeof r.html === "string");
-      const minDelay = Math.max(0, 1500 - elapsed);
-      setTimeout(() => {
-        setEmbeds(valid);
-        setFetching(false);
-      }, minDelay);
+      setEmbeds(valid);
     });
+
+    // Inject Twitter script immediately on mount
+    const existing = document.getElementById("twitter-widgets-script");
+    if (existing) existing.remove();
+    const script = document.createElement("script");
+    script.id = "twitter-widgets-script";
+    script.src = "https://platform.twitter.com/widgets.js";
+    script.async = true;
+    script.charset = "utf-8";
+    document.body.appendChild(script);
+
+    // Show content after 6 seconds
+    const timer = setTimeout(() => setShowContent(true), 6000);
+    return () => clearTimeout(timer);
   }, []);
 
+  // Re-run widgets.load on sort change
   useEffect(() => {
-    if (embeds.length === 0) return;
-    setReady(false);
-
-    const load = () => {
-      const twttr = (window as any).twttr;
-      if (twttr?.widgets) {
-        twttr.widgets.load();
-      } else {
-        const existing = document.getElementById("twitter-widgets-script");
-        if (existing) existing.remove();
-        const script = document.createElement("script");
-        script.id = "twitter-widgets-script";
-        script.src = "https://platform.twitter.com/widgets.js";
-        script.async = true;
-        script.charset = "utf-8";
-        document.body.appendChild(script);
-      }
-    };
-
-    setTimeout(load, 100);
-
-    const poll = setInterval(() => {
-      const iframes = document.querySelectorAll("iframe.twitter-tweet-rendered");
-      console.log(`Polling: ${iframes.length} / ${embeds.length} rendered`);
-      if (iframes.length >= embeds.length) {
-        clearInterval(poll);
-        setReady(true);
-      }
-    }, 500);
-
-    const fallback = setTimeout(() => {
-      clearInterval(poll);
-      console.log("Fallback triggered");
-      setReady(true);
-    }, 12000);
-
-    return () => {
-      clearInterval(poll);
-      clearTimeout(fallback);
-    };
-  }, [embeds, sortBy]);
+    if (!showContent) return;
+    const twttr = (window as any).twttr;
+    if (twttr?.widgets) {
+      setTimeout(() => twttr.widgets.load(), 100);
+    }
+  }, [sortBy, showContent]);
 
   const viewSelect = (
     <select
@@ -176,38 +147,6 @@ export default function Feed() {
     </div>
   );
 
-  const tweetSection = (
-    <>
-      <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 16px" }}>
-        <h2 style={{ fontWeight: "bold", fontSize: "18px", color: "var(--foreground)" }}>
-          On This Day — {MOCK_DATE}
-        </h2>
-      </div>
-
-      {/* Skeleton overlay — sits on top while loading, tweets render underneath */}
-      {(fetching || !ready) && (
-        <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          {[0, 1, 2].map((k) => skeletonCard(k))}
-        </div>
-      )}
-
-      {/* Tweets always in DOM so widgets.js can find and render them */}
-      <div style={{
-        width: "100%",
-        visibility: fetching || !ready ? "hidden" : "visible",
-        height: fetching || !ready ? 0 : "auto",
-        overflow: fetching || !ready ? "hidden" : "visible",
-      }}>
-        {sorted.map((t) => (
-          <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
-            <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
-            <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
-          </div>
-        ))}
-      </div>
-    </>
-  );
-
   return (
     <main
       style={{
@@ -232,7 +171,26 @@ export default function Feed() {
       )}
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", minWidth: 0 }}>
-        {tweetSection}
+
+        <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 16px" }}>
+          <h2 style={{ fontWeight: "bold", fontSize: "18px", color: "var(--foreground)" }}>
+            On This Day — {MOCK_DATE}
+          </h2>
+        </div>
+
+        {/* Skeleton shown for first 6 seconds */}
+        {!showContent && [0, 1, 2].map((k) => skeletonCard(k))}
+
+        {/* Tweets always rendering in background, revealed after 6s */}
+        <div style={{ width: "100%", visibility: showContent ? "visible" : "hidden", height: showContent ? "auto" : 0, overflow: "hidden" }}>
+          {sorted.map((t) => (
+            <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
+              <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
+              <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
+            </div>
+          ))}
+        </div>
+
       </div>
 
       {isDesktop && (
