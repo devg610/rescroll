@@ -22,7 +22,6 @@ export default function Feed() {
 
   const [embeds, setEmbeds] = useState<Tweet[]>([]);
   const [loading, setLoading] = useState(true);
-  const [widgetsReady, setWidgetsReady] = useState(false);
   const [view, setView] = useState("on-this-day");
   const [sortBy, setSortBy] = useState("date-desc");
   const [isDesktop, setIsDesktop] = useState(false);
@@ -51,26 +50,18 @@ export default function Feed() {
       const minDelay = Math.max(0, 1500 - elapsed);
       setTimeout(() => {
         setEmbeds(valid);
-        setLoading(false);
       }, minDelay);
     });
   }, []);
 
   useEffect(() => {
     if (embeds.length === 0) return;
-    setWidgetsReady(false);
 
     const injectAndLoad = () => {
       const twttr = (window as any).twttr;
-      const afterLoad = () => {
-        (window as any).twttr?.events?.bind("rendered", () => {
-          setWidgetsReady(true);
-        });
-        (window as any).twttr?.widgets?.load();
-      };
-
       if (twttr?.widgets) {
-        afterLoad();
+        twttr.widgets.load();
+        setTimeout(() => setLoading(false), 1500);
       } else {
         const existing = document.getElementById("twitter-widgets-script");
         if (existing) existing.remove();
@@ -79,7 +70,10 @@ export default function Feed() {
         script.src = "https://platform.twitter.com/widgets.js";
         script.async = true;
         script.charset = "utf-8";
-        script.onload = afterLoad;
+        script.onload = () => {
+          (window as any).twttr?.widgets?.load();
+          setTimeout(() => setLoading(false), 1500);
+        };
         document.body.appendChild(script);
       }
     };
@@ -122,7 +116,6 @@ export default function Feed() {
           cursor: "pointer",
           fontSize: "14px",
           whiteSpace: "nowrap",
-          flexShrink: 0,
         }}
       >
         Oldest
@@ -138,7 +131,6 @@ export default function Feed() {
           cursor: "pointer",
           fontSize: "14px",
           whiteSpace: "nowrap",
-          flexShrink: 0,
         }}
       >
         Newest
@@ -166,8 +158,6 @@ export default function Feed() {
     </div>
   );
 
-  const showSkeleton = loading || !widgetsReady;
-
   const tweetSection = (
     <>
       <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 16px" }}>
@@ -176,16 +166,14 @@ export default function Feed() {
         </h2>
       </div>
 
-      {showSkeleton && [0, 1, 2].map((k) => skeletonCard(k))}
+      {loading && [0, 1, 2].map((k) => skeletonCard(k))}
 
-      <div style={{ display: showSkeleton ? "none" : "contents" }}>
-        {sorted.map((t) => (
-          <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
-            <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
-            <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
-          </div>
-        ))}
-      </div>
+      {!loading && sorted.map((t) => (
+        <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
+          <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
+          <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
+        </div>
+      ))}
     </>
   );
 
