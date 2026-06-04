@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 type Tweet = {
   url: string;
@@ -21,12 +21,11 @@ export default function Feed() {
   ];
 
   const [embeds, setEmbeds] = useState<Tweet[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [renderedUrls, setRenderedUrls] = useState<Set<string>>(new Set());
+  const [fetching, setFetching] = useState(true);
+  const [ready, setReady] = useState(false);
   const [view, setView] = useState("on-this-day");
   const [sortBy, setSortBy] = useState("date-desc");
   const [isDesktop, setIsDesktop] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkSize = () => setIsDesktop(window.innerWidth >= 768);
@@ -36,7 +35,8 @@ export default function Feed() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
+    setFetching(true);
+    setReady(false);
     const start = Date.now();
     Promise.all(
       tweetList.map((t) =>
@@ -52,16 +52,17 @@ export default function Feed() {
       const minDelay = Math.max(0, 1500 - elapsed);
       setTimeout(() => {
         setEmbeds(valid);
-        setLoading(false);
+        setFetching(false);
       }, minDelay);
     });
   }, []);
 
+  // Inject widgets script after embeds are set
   useEffect(() => {
     if (embeds.length === 0) return;
-    setRenderedUrls(new Set());
+    setReady(false);
 
-    const injectAndLoad = () => {
+    const load = () => {
       const twttr = (window as any).twttr;
       if (twttr?.widgets) {
         twttr.widgets.load();
@@ -73,40 +74,33 @@ export default function Feed() {
         script.src = "https://platform.twitter.com/widgets.js";
         script.async = true;
         script.charset = "utf-8";
-        script.onload = () => (window as any).twttr?.widgets?.load();
         document.body.appendChild(script);
       }
     };
 
-    const timer = setTimeout(injectAndLoad, 100);
-    return () => clearTimeout(timer);
-  }, [embeds, sortBy]);
+    setTimeout(load, 100);
 
-  // Watch for iframes appearing inside tweet containers
-  useEffect(() => {
-    if (!containerRef.current || embeds.length === 0) return;
-
-    const observer = new MutationObserver(() => {
-      if (!containerRef.current) return;
-      const containers = containerRef.current.querySelectorAll("[data-tweet-url]");
-      const newRendered = new Set<string>();
-      containers.forEach((el) => {
-        const url = el.getAttribute("data-tweet-url");
-        if (url && el.querySelector("iframe")) {
-          newRendered.add(url);
-        }
-      });
-      if (newRendered.size > 0) {
-        setRenderedUrls((prev) => {
-          const merged = new Set([...prev, ...newRendered]);
-          return merged;
-        });
+    // Poll every 300ms to check if iframes have appeared
+    const poll = setInterval(() => {
+      const iframes = document.querySelectorAll(".twitter-tweet iframe, twitter-widget");
+      console.log(`Polling: found ${iframes.length} rendered tweets`);
+      if (iframes.length >= embeds.length) {
+        clearInterval(poll);
+        setReady(true);
       }
-    });
+    }, 300);
 
-    observer.observe(containerRef.current, { childList: true, subtree: true });
-    return () => observer.disconnect();
-  }, [embeds]);
+    // Safety fallback — show tweets after 10s no matter what
+    const fallback = setTimeout(() => {
+      clearInterval(poll);
+      setReady(true);
+    }, 10000);
+
+    return () => {
+      clearInterval(poll);
+      clearTimeout(fallback);
+    };
+  }, [embeds, sortBy]);
 
   const viewSelect = (
     <select
@@ -184,6 +178,8 @@ export default function Feed() {
     </div>
   );
 
+  const showSkeleton = fetching || !ready;
+
   const tweetSection = (
     <>
       <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 16px" }}>
@@ -192,22 +188,15 @@ export default function Feed() {
         </h2>
       </div>
 
-      {loading && [0, 1, 2].map((k) => skeletonCard(k))}
+      {showSkeleton && [0, 1, 2].map((k) => skeletonCard(k))}
 
-      <div ref={containerRef} style={{ width: "100%", display: loading ? "none" : "contents" }}>
-        {sorted.map((t) => {
-          const isRendered = renderedUrls.has(t.url);
-          return (
-            <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
-              {!isRendered && skeletonCard(t.year)}
-              <div
-                data-tweet-url={t.url}
-                style={{ width: "100%", display: isRendered ? "block" : "none" }}
-                dangerouslySetInnerHTML={{ __html: t.html }}
-              />
-            </div>
-          );
-        })}
+      <div style={{ display: showSkeleton ? "none" : "contents" }}>
+        {sorted.map((t) => (
+          <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
+            <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
+            <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
+          </div>
+        ))}
       </div>
     </>
   );
