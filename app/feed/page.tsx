@@ -22,6 +22,7 @@ export default function Feed() {
 
   const [embeds, setEmbeds] = useState<Tweet[]>([]);
   const [loading, setLoading] = useState(true);
+  const [widgetsReady, setWidgetsReady] = useState(false);
   const [view, setView] = useState("on-this-day");
   const [sortBy, setSortBy] = useState("date-desc");
   const [isDesktop, setIsDesktop] = useState(false);
@@ -35,6 +36,7 @@ export default function Feed() {
 
   useEffect(() => {
     setLoading(true);
+    const start = Date.now();
     Promise.all(
       tweetList.map((t) =>
         fetch(`https://publish.twitter.com/oembed?url=${t.url}&omit_script=true`)
@@ -43,18 +45,32 @@ export default function Feed() {
           .catch(() => null)
       )
     ).then((results) => {
-      setEmbeds(results.filter((r): r is Tweet => r !== null && typeof r.html === "string"));
-      setLoading(false);
+      const elapsed = Date.now() - start;
+      console.log(`oEmbed fetch took ${elapsed}ms`);
+      const valid = results.filter((r): r is Tweet => r !== null && typeof r.html === "string");
+      const minDelay = Math.max(0, 1500 - elapsed);
+      setTimeout(() => {
+        setEmbeds(valid);
+        setLoading(false);
+      }, minDelay);
     });
   }, []);
 
   useEffect(() => {
     if (embeds.length === 0) return;
+    setWidgetsReady(false);
 
     const injectAndLoad = () => {
       const twttr = (window as any).twttr;
+      const afterLoad = () => {
+        (window as any).twttr?.events?.bind("rendered", () => {
+          setWidgetsReady(true);
+        });
+        (window as any).twttr?.widgets?.load();
+      };
+
       if (twttr?.widgets) {
-        twttr.widgets.load();
+        afterLoad();
       } else {
         const existing = document.getElementById("twitter-widgets-script");
         if (existing) existing.remove();
@@ -63,7 +79,7 @@ export default function Feed() {
         script.src = "https://platform.twitter.com/widgets.js";
         script.async = true;
         script.charset = "utf-8";
-        script.onload = () => (window as any).twttr?.widgets?.load();
+        script.onload = afterLoad;
         document.body.appendChild(script);
       }
     };
@@ -71,36 +87,6 @@ export default function Feed() {
     const timer = setTimeout(injectAndLoad, 100);
     return () => clearTimeout(timer);
   }, [embeds, sortBy]);
-
-  const sortOptions = [
-    { value: "date-asc", label: "Date ↑" },
-    { value: "date-desc", label: "Date ↓" },
-    { value: "likes-asc", label: "Likes ↑" },
-    { value: "likes-desc", label: "Likes ↓" },
-  ];
-
-  const renderSortButton = (opt: { value: string; label: string }) => {
-    const active = sortBy === opt.value;
-    return (
-      <button
-        key={opt.value}
-        onClick={() => setSortBy(opt.value)}
-        style={{
-          padding: "6px 14px",
-          borderRadius: "9999px",
-          border: "none",
-          backgroundColor: active ? "#1D9BF0" : "var(--border)",
-          color: active ? "#ffffff" : "var(--foreground)",
-          cursor: "pointer",
-          fontSize: "14px",
-          whiteSpace: "nowrap",
-          flexShrink: 0,
-        }}
-      >
-        {opt.label}
-      </button>
-    );
-  };
 
   const viewSelect = (
     <select
@@ -120,14 +106,54 @@ export default function Feed() {
     </select>
   );
 
+  const dateSort = (
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+      <span style={{ fontSize: "14px", fontWeight: "bold", color: "var(--foreground)", whiteSpace: "nowrap" }}>
+        Date:
+      </span>
+      <button
+        onClick={() => setSortBy("date-asc")}
+        style={{
+          padding: "6px 14px",
+          borderRadius: "9999px",
+          border: "none",
+          backgroundColor: sortBy === "date-asc" ? "#1D9BF0" : "var(--border)",
+          color: sortBy === "date-asc" ? "#ffffff" : "var(--foreground)",
+          cursor: "pointer",
+          fontSize: "14px",
+          whiteSpace: "nowrap",
+          flexShrink: 0,
+        }}
+      >
+        Oldest
+      </button>
+      <button
+        onClick={() => setSortBy("date-desc")}
+        style={{
+          padding: "6px 14px",
+          borderRadius: "9999px",
+          border: "none",
+          backgroundColor: sortBy === "date-desc" ? "#1D9BF0" : "var(--border)",
+          color: sortBy === "date-desc" ? "#ffffff" : "var(--foreground)",
+          cursor: "pointer",
+          fontSize: "14px",
+          whiteSpace: "nowrap",
+          flexShrink: 0,
+        }}
+      >
+        Newest
+      </button>
+    </div>
+  );
+
   const sorted = [...embeds].sort((a, b) => {
     if (sortBy === "date-desc") return b.year - a.year;
     if (sortBy === "date-asc") return a.year - b.year;
     return 0;
   });
 
-  const skeletonCard = (
-    <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", padding: "16px", border: "1px solid var(--border)", backgroundColor: "var(--background)" }}>
+  const skeletonCard = (key: number) => (
+    <div key={key} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", padding: "16px", border: "1px solid var(--border)", backgroundColor: "var(--background)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
         <div style={{ width: 48, height: 48, borderRadius: "9999px", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
         <div style={{ flex: 1 }}>
@@ -140,6 +166,8 @@ export default function Feed() {
     </div>
   );
 
+  const showSkeleton = loading || !widgetsReady;
+
   const tweetSection = (
     <>
       <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 16px" }}>
@@ -148,20 +176,16 @@ export default function Feed() {
         </h2>
       </div>
 
-      {loading && (
-        <>
-          {skeletonCard}
-          {skeletonCard}
-          {skeletonCard}
-        </>
-      )}
+      {showSkeleton && [0, 1, 2].map((k) => skeletonCard(k))}
 
-      {!loading && sorted.map((t) => (
-        <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
-          <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
-          <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
-        </div>
-      ))}
+      <div style={{ display: showSkeleton ? "none" : "contents" }}>
+        {sorted.map((t) => (
+          <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
+            <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
+            <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
+          </div>
+        ))}
+      </div>
     </>
   );
 
@@ -183,8 +207,7 @@ export default function Feed() {
         <div style={{ width: "100%", overflowX: "auto", paddingBottom: "12px", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", whiteSpace: "nowrap" }}>
             <div style={{ flexShrink: 0, minWidth: "160px" }}>{viewSelect}</div>
-            <span style={{ fontSize: "14px", color: "var(--foreground)", flexShrink: 0 }}>Sort By:</span>
-            {sortOptions.map(renderSortButton)}
+            {dateSort}
           </div>
         </div>
       )}
@@ -202,9 +225,7 @@ export default function Feed() {
             </div>
             <div>
               <div style={{ marginBottom: "8px", fontSize: "14px", color: "var(--foreground)" }}>Sort By</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                {sortOptions.map(renderSortButton)}
-              </div>
+              {dateSort}
             </div>
           </div>
         </aside>
