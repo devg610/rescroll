@@ -2,10 +2,16 @@
 
 import { useEffect, useState } from "react";
 
+type Tweet = {
+  url: string;
+  year: number;
+  html?: string;
+};
+
 export default function Feed() {
   const MOCK_DATE = "January 1";
 
-  const tweets = [
+  const tweets: Tweet[] = [
     { url: "https://x.com/todaysdaytoday/status/1609535289810206721", year: 2023 },
     { url: "https://x.com/todaysdaytoday/status/1477264082801770497", year: 2022 },
     { url: "https://x.com/nickjfuentes/status/1874335588717125879", year: 2025 },
@@ -14,7 +20,7 @@ export default function Feed() {
     { url: "https://x.com/cobratate/status/1741744326823002131", year: 2024 },
   ];
 
-  const [embeds, setEmbeds] = useState([]);
+  const [embeds, setEmbeds] = useState<Tweet[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState("on-this-day");
   const [sortBy, setSortBy] = useState("date-desc");
