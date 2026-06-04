@@ -50,15 +50,27 @@ export default function Feed() {
 
   useEffect(() => {
     if (embeds.length === 0) return;
-    const existing = document.getElementById("twitter-widgets-script");
-    if (existing) existing.remove();
-    const script = document.createElement("script");
-    script.id = "twitter-widgets-script";
-    script.src = "https://platform.twitter.com/widgets.js";
-    script.async = true;
-    script.charset = "utf-8";
-    document.body.appendChild(script);
-  }, [embeds]);
+
+    const injectAndLoad = () => {
+      const twttr = (window as any).twttr;
+      if (twttr?.widgets) {
+        twttr.widgets.load();
+      } else {
+        const existing = document.getElementById("twitter-widgets-script");
+        if (existing) existing.remove();
+        const script = document.createElement("script");
+        script.id = "twitter-widgets-script";
+        script.src = "https://platform.twitter.com/widgets.js";
+        script.async = true;
+        script.charset = "utf-8";
+        script.onload = () => (window as any).twttr?.widgets?.load();
+        document.body.appendChild(script);
+      }
+    };
+
+    const timer = setTimeout(injectAndLoad, 100);
+    return () => clearTimeout(timer);
+  }, [embeds, sortBy]);
 
   const sortOptions = [
     { value: "date-asc", label: "Date ↑" },
@@ -114,26 +126,34 @@ export default function Feed() {
     return 0;
   });
 
+  const skeletonCard = (
+    <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", padding: "16px", border: "1px solid var(--border)", backgroundColor: "var(--background)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+        <div style={{ width: 48, height: 48, borderRadius: "9999px", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
+        <div style={{ flex: 1 }}>
+          <div style={{ height: 14, width: "40%", backgroundColor: "var(--border)", marginBottom: 8, animation: "pulse 1.5s ease-in-out infinite" }} />
+          <div style={{ height: 12, width: "25%", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
+        </div>
+      </div>
+      <div style={{ height: 14, width: "90%", backgroundColor: "var(--border)", marginBottom: 8, animation: "pulse 1.5s ease-in-out infinite" }} />
+      <div style={{ height: 14, width: "70%", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
+    </div>
+  );
+
   const tweetSection = (
     <>
-      <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto" }}>
-        <h2 style={{ fontWeight: "bold", fontSize: "18px", color: "var(--foreground)", marginBottom: "16px" }}>
+      <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 16px" }}>
+        <h2 style={{ fontWeight: "bold", fontSize: "18px", color: "var(--foreground)" }}>
           On This Day — {MOCK_DATE}
         </h2>
       </div>
 
       {loading && (
-        <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto", padding: "16px", border: "1px solid var(--border)", backgroundColor: "var(--background)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-            <div style={{ width: 48, height: 48, borderRadius: "9999px", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
-            <div style={{ flex: 1 }}>
-              <div style={{ height: 14, width: "40%", backgroundColor: "var(--border)", marginBottom: 8, animation: "pulse 1.5s ease-in-out infinite" }} />
-              <div style={{ height: 12, width: "25%", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
-            </div>
-          </div>
-          <div style={{ height: 14, width: "90%", backgroundColor: "var(--border)", marginBottom: 8, animation: "pulse 1.5s ease-in-out infinite" }} />
-          <div style={{ height: 14, width: "70%", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
-        </div>
+        <>
+          {skeletonCard}
+          {skeletonCard}
+          {skeletonCard}
+        </>
       )}
 
       {!loading && sorted.map((t) => (
