@@ -3,8 +3,19 @@
 import { useEffect, useState } from "react";
 
 export default function Feed() {
-  const [embedHtml, setEmbedHtml] = useState(null);
-  const [error, setError] = useState(false);
+  const MOCK_DATE = "January 1";
+
+  const tweets = [
+    { url: "https://x.com/todaysdaytoday/status/1609535289810206721", year: 2023 },
+    { url: "https://x.com/todaysdaytoday/status/1477264082801770497", year: 2022 },
+    { url: "https://x.com/nickjfuentes/status/1874335588717125879", year: 2025 },
+    { url: "https://x.com/nickjfuentes/status/2006717798509101118", year: 2026 },
+    { url: "https://x.com/elonmusk/status/153594528908058624", year: 2011 },
+    { url: "https://x.com/cobratate/status/1741744326823002131", year: 2024 },
+  ];
+
+  const [embeds, setEmbeds] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [view, setView] = useState("on-this-day");
   const [sortBy, setSortBy] = useState("date-desc");
   const [isDesktop, setIsDesktop] = useState(false);
@@ -17,16 +28,22 @@ export default function Feed() {
   }, []);
 
   useEffect(() => {
-    setEmbedHtml(null);
-    setError(false);
-    fetch("https://publish.twitter.com/oembed?url=https://x.com/chodadev/status/1538932357364858880&omit_script=true")
-      .then((res) => res.json())
-      .then((data) => setEmbedHtml(data.html))
-      .catch(() => setError(true));
+    setLoading(true);
+    Promise.all(
+      tweets.map((t) =>
+        fetch(`https://publish.twitter.com/oembed?url=${t.url}&omit_script=true`)
+          .then((r) => r.json())
+          .then((data) => ({ ...t, html: data.html }))
+          .catch(() => ({ ...t, html: null }))
+      )
+    ).then((results) => {
+      setEmbeds(results.filter((r) => r.html !== null));
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {
-    if (!embedHtml) return;
+    if (embeds.length === 0) return;
     const existing = document.getElementById("twitter-widgets-script");
     if (existing) existing.remove();
     const script = document.createElement("script");
@@ -35,7 +52,7 @@ export default function Feed() {
     script.async = true;
     script.charset = "utf-8";
     document.body.appendChild(script);
-  }, [embedHtml]);
+  }, [embeds]);
 
   const sortOptions = [
     { value: "date-asc", label: "Date ↑" },
@@ -85,10 +102,20 @@ export default function Feed() {
     </select>
   );
 
+  const sorted = [...embeds].sort((a, b) => {
+    if (sortBy === "date-desc") return b.year - a.year;
+    if (sortBy === "date-asc") return a.year - b.year;
+    return 0;
+  });
+
   const tweetSection = (
     <>
-      {error && <p style={{ color: "var(--muted)" }}>could not load tweet.</p>}
-      {!error && !embedHtml && (
+      <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto" }}>
+        <h2 style={{ fontWeight: "bold", fontSize: "18px", color: "var(--foreground)", marginBottom: "16px" }}>
+          On This Day — {MOCK_DATE}
+        </h2>
+      </div>
+      {loading && (
         <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto", padding: "16px", border: "1px solid var(--border)", backgroundColor: "var(--background)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
             <div style={{ width: 48, height: 48, borderRadius: "9999px", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
@@ -101,11 +128,12 @@ export default function Feed() {
           <div style={{ height: 14, width: "70%", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
         </div>
       )}
-      {embedHtml && (
-        <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto", display: "flex", justifyContent: "center" }}>
-          <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: embedHtml }} />
+      {!loading && sorted.map((t) => (
+        <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
+          <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
+          <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
         </div>
-      )}
+      ))}
     </>
   );
 
