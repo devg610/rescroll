@@ -57,7 +57,6 @@ export default function Feed() {
     });
   }, []);
 
-  // Inject widgets script after embeds are set
   useEffect(() => {
     if (embeds.length === 0) return;
     setReady(false);
@@ -80,21 +79,20 @@ export default function Feed() {
 
     setTimeout(load, 100);
 
-    // Poll every 300ms to check if iframes have appeared
     const poll = setInterval(() => {
-      const iframes = document.querySelectorAll(".twitter-tweet iframe, twitter-widget");
-      console.log(`Polling: found ${iframes.length} rendered tweets`);
+      const iframes = document.querySelectorAll("iframe.twitter-tweet-rendered");
+      console.log(`Polling: ${iframes.length} / ${embeds.length} rendered`);
       if (iframes.length >= embeds.length) {
         clearInterval(poll);
         setReady(true);
       }
-    }, 300);
+    }, 500);
 
-    // Safety fallback — show tweets after 10s no matter what
     const fallback = setTimeout(() => {
       clearInterval(poll);
+      console.log("Fallback triggered");
       setReady(true);
-    }, 10000);
+    }, 12000);
 
     return () => {
       clearInterval(poll);
@@ -178,8 +176,6 @@ export default function Feed() {
     </div>
   );
 
-  const showSkeleton = fetching || !ready;
-
   const tweetSection = (
     <>
       <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 16px" }}>
@@ -188,9 +184,20 @@ export default function Feed() {
         </h2>
       </div>
 
-      {showSkeleton && [0, 1, 2].map((k) => skeletonCard(k))}
+      {/* Skeleton overlay — sits on top while loading, tweets render underneath */}
+      {(fetching || !ready) && (
+        <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          {[0, 1, 2].map((k) => skeletonCard(k))}
+        </div>
+      )}
 
-      <div style={{ display: showSkeleton ? "none" : "contents" }}>
+      {/* Tweets always in DOM so widgets.js can find and render them */}
+      <div style={{
+        width: "100%",
+        visibility: fetching || !ready ? "hidden" : "visible",
+        height: fetching || !ready ? 0 : "auto",
+        overflow: fetching || !ready ? "hidden" : "visible",
+      }}>
         {sorted.map((t) => (
           <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
             <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
