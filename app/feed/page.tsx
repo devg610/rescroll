@@ -144,40 +144,62 @@ export default function Feed() {
   );
 
   return (
-    <main
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: isDesktop ? "row" : "column",
-        alignItems: "stretch",
-        padding: isDesktop ? "40px 24px" : "16px 24px 40px",
-        backgroundColor: "var(--background)",
-        color: "var(--foreground)",
-      }}
-    >
-      <style>{".twitter-tweet { margin: 0 auto !important; width: 100% !important; }"}</style>
-
-      {!isDesktop && (
-        <div style={{ width: "100%", overflowX: "auto", paddingBottom: "12px", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", whiteSpace: "nowrap" }}>
-            <div style={{ flexShrink: 0, minWidth: "160px" }}>{viewSelect}</div>
-            {dateSort}
+    <>
+      {/* Full screen fixed overlay — covers everything including nav */}
+      {!showContent && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "var(--background)",
+          zIndex: 9999,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: "80px 24px 40px",
+          overflowY: "auto",
+        }}>
+          <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", marginBottom: "16px" }}>
+            <h2 style={{ fontWeight: "bold", fontSize: "18px", color: "var(--foreground)" }}>
+              On This Day — {MOCK_DATE}
+            </h2>
           </div>
+          {[0, 1, 2].map((k) => skeletonCard(k))}
         </div>
       )}
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", minWidth: 0 }}>
+      <main
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: isDesktop ? "row" : "column",
+          alignItems: "stretch",
+          padding: isDesktop ? "40px 24px" : "16px 24px 40px",
+          backgroundColor: "var(--background)",
+          color: "var(--foreground)",
+        }}
+      >
+        <style>{".twitter-tweet { margin: 0 auto !important; width: 100% !important; }"}</style>
 
-        <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 16px" }}>
-          <h2 style={{ fontWeight: "bold", fontSize: "18px", color: "var(--foreground)" }}>
-            On This Day — {MOCK_DATE}
-          </h2>
-        </div>
+        {!isDesktop && (
+          <div style={{ width: "100%", overflowX: "auto", paddingBottom: "12px", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", whiteSpace: "nowrap" }}>
+              <div style={{ flexShrink: 0, minWidth: "160px" }}>{viewSelect}</div>
+              {dateSort}
+            </div>
+          </div>
+        )}
 
-        {/* Outer wrapper — relative so skeleton can overlay */}
-        <div style={{ position: "relative", width: "100%" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", minWidth: 0 }}>
 
-          {/* Tweets render in background immediately */}
+          <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 16px" }}>
+            <h2 style={{ fontWeight: "bold", fontSize: "18px", color: "var(--foreground)" }}>
+              On This Day — {MOCK_DATE}
+            </h2>
+          </div>
+
           <div style={{ width: "100%" }}>
             {sorted.map((t) => (
               <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
@@ -187,39 +209,23 @@ export default function Feed() {
             ))}
           </div>
 
-          {/* Skeleton overlays on top for 8 seconds */}
-          {!showContent && (
-            <div style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              minHeight: "100%",
-              backgroundColor: "var(--background)",
-              zIndex: 10,
-            }}>
-              {[0, 1, 2].map((k) => skeletonCard(k))}
-            </div>
-          )}
-
         </div>
 
-      </div>
-
-      {isDesktop && (
-        <aside style={{ width: "240px", flexShrink: 0, padding: "24px 20px 20px 20px", borderLeft: "1px solid var(--border)" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", color: "var(--foreground)" }}>View</label>
-              {viewSelect}
+        {isDesktop && (
+          <aside style={{ width: "240px", flexShrink: 0, padding: "24px 20px 20px 20px", borderLeft: "1px solid var(--border)" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              <div>
+                <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", color: "var(--foreground)" }}>View</label>
+                {viewSelect}
+              </div>
+              <div>
+                <div style={{ marginBottom: "8px", fontSize: "14px", color: "var(--foreground)" }}>Sort By</div>
+                {dateSort}
+              </div>
             </div>
-            <div>
-              <div style={{ marginBottom: "8px", fontSize: "14px", color: "var(--foreground)" }}>Sort By</div>
-              {dateSort}
-            </div>
-          </div>
-        </aside>
-      )}
-    </main>
+          </aside>
+        )}
+      </main>
+    </>
   );
 }
