@@ -1,30 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-type Tweet = {
-  url: string;
-  year: number;
-  html: string;
-};
+const tweetIds = [
+  { id: "1609535289810206721", year: 2023 },
+  { id: "1477264082801770497", year: 2022 },
+  { id: "1874335588717125879", year: 2025 },
+  { id: "2006717798509101118", year: 2026 },
+  { id: "153594528908058624",  year: 2011 },
+  { id: "1741744326823002131", year: 2024 },
+];
 
 export default function Feed() {
   const MOCK_DATE = "January 1";
-
-  const tweetList = [
-    { url: "https://x.com/todaysdaytoday/status/1609535289810206721", year: 2023 },
-    { url: "https://x.com/todaysdaytoday/status/1477264082801770497", year: 2022 },
-    { url: "https://x.com/nickjfuentes/status/1874335588717125879", year: 2025 },
-    { url: "https://x.com/nickjfuentes/status/2006717798509101118", year: 2026 },
-    { url: "https://x.com/elonmusk/status/153594528908058624", year: 2011 },
-    { url: "https://x.com/cobratate/status/1741744326823002131", year: 2024 },
-  ];
-
-  const [embeds, setEmbeds] = useState<Tweet[]>([]);
-  const [showContent, setShowContent] = useState(false);
-  const [view, setView] = useState("on-this-day");
+  const [ready, setReady] = useState(false);
   const [sortBy, setSortBy] = useState("date-desc");
+  const [view, setView] = useState("on-this-day");
   const [isDesktop, setIsDesktop] = useState(false);
+  const containerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     const checkSize = () => setIsDesktop(window.innerWidth >= 768);
@@ -33,52 +26,60 @@ export default function Feed() {
     return () => window.removeEventListener("resize", checkSize);
   }, []);
 
+  const sorted = [...tweetIds].sort((a, b) => {
+    if (sortBy === "date-desc") return b.year - a.year;
+    if (sortBy === "date-asc") return a.year - b.year;
+    return 0;
+  });
+
+  const renderTweets = (twttr: any) => {
+    setReady(false);
+    const containers = containerRefs.current;
+    const promises = sorted.map((t, i) => {
+      const el = containers[i];
+      if (!el) return Promise.resolve();
+      el.innerHTML = "";
+      return twttr.widgets.createTweet(t.id, el, { theme: "dark", dnt: true });
+    });
+    Promise.all(promises).then(() => setReady(true));
+  };
+
   useEffect(() => {
-    // Inject script immediately
     const existing = document.getElementById("twitter-widgets-script");
     if (existing) existing.remove();
+
     const script = document.createElement("script");
     script.id = "twitter-widgets-script";
     script.src = "https://platform.twitter.com/widgets.js";
     script.async = true;
     script.charset = "utf-8";
+    script.onload = () => {
+      const twttr = (window as any).twttr;
+      twttr.ready(() => renderTweets(twttr));
+    };
     document.body.appendChild(script);
-
-    // Fetch tweets
-    Promise.all(
-      tweetList.map((t) =>
-        fetch(`https://publish.twitter.com/oembed?url=${t.url}&omit_script=true`)
-          .then((r) => r.json())
-          .then((data) => ({ ...t, html: data.html as string }))
-          .catch(() => null)
-      )
-    ).then((results) => {
-      const valid = results.filter((r): r is Tweet => r !== null && typeof r.html === "string");
-      // Store tweets but don't show yet
-      setEmbeds(valid);
-      // Show content 5 seconds after tweets are fetched
-      setTimeout(() => setShowContent(true), 5000);
-    });
   }, []);
 
-  // When showContent becomes true, add tweets to DOM then immediately call widgets.load
   useEffect(() => {
-    if (!showContent) return;
-    setTimeout(() => {
-      const twttr = (window as any).twttr;
-      if (twttr?.widgets) {
-        twttr.widgets.load();
-      }
-    }, 50);
-  }, [showContent]);
-
-  useEffect(() => {
-    if (!showContent) return;
     const twttr = (window as any).twttr;
     if (twttr?.widgets) {
-      setTimeout(() => twttr.widgets.load(), 100);
+      twttr.ready(() => renderTweets(twttr));
     }
   }, [sortBy]);
+
+  const skeletonCard = (key: number) => (
+    <div key={key} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", padding: "16px", border: "1px solid var(--border)", backgroundColor: "var(--background)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+        <div style={{ width: 48, height: 48, borderRadius: "9999px", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
+        <div style={{ flex: 1 }}>
+          <div style={{ height: 14, width: "40%", backgroundColor: "var(--border)", marginBottom: 8, animation: "pulse 1.5s ease-in-out infinite" }} />
+          <div style={{ height: 12, width: "25%", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
+        </div>
+      </div>
+      <div style={{ height: 14, width: "90%", backgroundColor: "var(--border)", marginBottom: 8, animation: "pulse 1.5s ease-in-out infinite" }} />
+      <div style={{ height: 14, width: "70%", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
+    </div>
+  );
 
   const viewSelect = (
     <select
@@ -136,40 +137,14 @@ export default function Feed() {
     </div>
   );
 
-  const sorted = [...embeds].sort((a, b) => {
-    if (sortBy === "date-desc") return b.year - a.year;
-    if (sortBy === "date-asc") return a.year - b.year;
-    return 0;
-  });
-
-  const skeletonCard = (key: number) => (
-    <div key={key} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", padding: "16px", border: "1px solid var(--border)", backgroundColor: "var(--background)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-        <div style={{ width: 48, height: 48, borderRadius: "9999px", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
-        <div style={{ flex: 1 }}>
-          <div style={{ height: 14, width: "40%", backgroundColor: "var(--border)", marginBottom: 8, animation: "pulse 1.5s ease-in-out infinite" }} />
-          <div style={{ height: 12, width: "25%", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
-        </div>
-      </div>
-      <div style={{ height: 14, width: "90%", backgroundColor: "var(--border)", marginBottom: 8, animation: "pulse 1.5s ease-in-out infinite" }} />
-      <div style={{ height: 14, width: "70%", backgroundColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
-    </div>
-  );
-
   return (
     <>
-      <style>{`
-        .twitter-tweet { margin: 0 auto !important; width: 100% !important; }
-      `}</style>
+      <style>{`.twitter-tweet { margin: 0 auto !important; width: 100% !important; }`}</style>
 
-      {/* Full screen fixed overlay — shows skeleton, hides everything beneath */}
-      {!showContent && (
+      {!ready && (
         <div style={{
           position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+          top: 0, left: 0, right: 0, bottom: 0,
           backgroundColor: "var(--background)",
           zIndex: 9999,
           display: "flex",
@@ -186,17 +161,15 @@ export default function Feed() {
         </div>
       )}
 
-      <main
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: isDesktop ? "row" : "column",
-          alignItems: "stretch",
-          padding: isDesktop ? "40px 24px" : "16px 24px 40px",
-          backgroundColor: "var(--background)",
-          color: "var(--foreground)",
-        }}
-      >
+      <main style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: isDesktop ? "row" : "column",
+        alignItems: "stretch",
+        padding: isDesktop ? "40px 24px" : "16px 24px 40px",
+        backgroundColor: "var(--background)",
+        color: "var(--foreground)",
+      }}>
         {!isDesktop && (
           <div style={{ width: "100%", overflowX: "auto", paddingBottom: "12px", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", whiteSpace: "nowrap" }}>
@@ -214,14 +187,10 @@ export default function Feed() {
           </div>
 
           <div style={{ width: "100%" }}>
-            {/* Only render tweet HTML after showContent is true */}
-            {showContent && sorted.map((t) => (
-              <div
-                key={t.url}
-                style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}
-              >
+            {sorted.map((t, i) => (
+              <div key={t.id} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px" }}>
                 <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
-                <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
+                <div ref={(el) => { containerRefs.current[i] = el; }} style={{ width: "100%" }} />
               </div>
             ))}
           </div>
