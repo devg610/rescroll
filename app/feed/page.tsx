@@ -34,18 +34,7 @@ export default function Feed() {
   }, []);
 
   useEffect(() => {
-    Promise.all(
-      tweetList.map((t) =>
-        fetch(`https://publish.twitter.com/oembed?url=${t.url}&omit_script=true`)
-          .then((r) => r.json())
-          .then((data) => ({ ...t, html: data.html as string }))
-          .catch(() => null)
-      )
-    ).then((results) => {
-      const valid = results.filter((r): r is Tweet => r !== null && typeof r.html === "string");
-      setEmbeds(valid);
-    });
-
+    // Inject script immediately
     const existing = document.getElementById("twitter-widgets-script");
     if (existing) existing.remove();
     const script = document.createElement("script");
@@ -55,9 +44,33 @@ export default function Feed() {
     script.charset = "utf-8";
     document.body.appendChild(script);
 
-    const timer = setTimeout(() => setShowContent(true), 8000);
-    return () => clearTimeout(timer);
+    // Fetch tweets
+    Promise.all(
+      tweetList.map((t) =>
+        fetch(`https://publish.twitter.com/oembed?url=${t.url}&omit_script=true`)
+          .then((r) => r.json())
+          .then((data) => ({ ...t, html: data.html as string }))
+          .catch(() => null)
+      )
+    ).then((results) => {
+      const valid = results.filter((r): r is Tweet => r !== null && typeof r.html === "string");
+      // Store tweets but don't show yet
+      setEmbeds(valid);
+      // Show content 5 seconds after tweets are fetched
+      setTimeout(() => setShowContent(true), 5000);
+    });
   }, []);
+
+  // When showContent becomes true, add tweets to DOM then immediately call widgets.load
+  useEffect(() => {
+    if (!showContent) return;
+    setTimeout(() => {
+      const twttr = (window as any).twttr;
+      if (twttr?.widgets) {
+        twttr.widgets.load();
+      }
+    }, 50);
+  }, [showContent]);
 
   useEffect(() => {
     if (!showContent) return;
@@ -65,7 +78,7 @@ export default function Feed() {
     if (twttr?.widgets) {
       setTimeout(() => twttr.widgets.load(), 100);
     }
-  }, [sortBy, showContent]);
+  }, [sortBy]);
 
   const viewSelect = (
     <select
@@ -147,12 +160,9 @@ export default function Feed() {
     <>
       <style>{`
         .twitter-tweet { margin: 0 auto !important; width: 100% !important; }
-        .tweet-hide * { color: transparent !important; background-color: transparent !important; border-color: transparent !important; }
-        .tweet-hide a { color: transparent !important; }
-        .tweet-hide img { opacity: 0 !important; }
       `}</style>
 
-      {/* Full screen fixed overlay */}
+      {/* Full screen fixed overlay — shows skeleton, hides everything beneath */}
       {!showContent && (
         <div style={{
           position: "fixed",
@@ -204,13 +214,13 @@ export default function Feed() {
           </div>
 
           <div style={{ width: "100%" }}>
-            {sorted.map((t) => (
+            {/* Only render tweet HTML after showContent is true */}
+            {showContent && sorted.map((t) => (
               <div
                 key={t.url}
-                className={!showContent ? "tweet-hide" : ""}
                 style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}
               >
-                <div style={{ color: showContent ? "var(--muted)" : "transparent", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
+                <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
                 <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
               </div>
             ))}
