@@ -34,7 +34,6 @@ export default function Feed() {
   }, []);
 
   useEffect(() => {
-    // Fetch tweets
     Promise.all(
       tweetList.map((t) =>
         fetch(`https://publish.twitter.com/oembed?url=${t.url}&omit_script=true`)
@@ -47,7 +46,6 @@ export default function Feed() {
       setEmbeds(valid);
     });
 
-    // Inject Twitter script immediately on mount
     const existing = document.getElementById("twitter-widgets-script");
     if (existing) existing.remove();
     const script = document.createElement("script");
@@ -57,12 +55,10 @@ export default function Feed() {
     script.charset = "utf-8";
     document.body.appendChild(script);
 
-    // Show content after 6 seconds
-    const timer = setTimeout(() => setShowContent(true), 6000);
+    const timer = setTimeout(() => setShowContent(true), 8000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Re-run widgets.load on sort change
   useEffect(() => {
     if (!showContent) return;
     const twttr = (window as any).twttr;
@@ -178,17 +174,34 @@ export default function Feed() {
           </h2>
         </div>
 
-        {/* Skeleton shown for first 6 seconds */}
-        {!showContent && [0, 1, 2].map((k) => skeletonCard(k))}
+        {/* Outer wrapper — relative so skeleton can overlay */}
+        <div style={{ position: "relative", width: "100%" }}>
 
-        {/* Tweets always rendering in background, revealed after 6s */}
-        <div style={{ width: "100%", visibility: showContent ? "visible" : "hidden", height: showContent ? "auto" : 0, overflow: "hidden" }}>
-          {sorted.map((t) => (
-            <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
-              <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
-              <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
+          {/* Tweets render in background immediately */}
+          <div style={{ width: "100%" }}>
+            {sorted.map((t) => (
+              <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
+                <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
+                <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
+              </div>
+            ))}
+          </div>
+
+          {/* Skeleton overlays on top for 8 seconds */}
+          {!showContent && (
+            <div style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              minHeight: "100%",
+              backgroundColor: "var(--background)",
+              zIndex: 10,
+            }}>
+              {[0, 1, 2].map((k) => skeletonCard(k))}
             </div>
-          ))}
+          )}
+
         </div>
 
       </div>
