@@ -145,7 +145,14 @@ export default function Feed() {
 
   return (
     <>
-      {/* Full screen fixed overlay — covers everything including nav */}
+      <style>{`
+        .twitter-tweet { margin: 0 auto !important; width: 100% !important; }
+        .tweet-hide * { color: transparent !important; background-color: transparent !important; border-color: transparent !important; }
+        .tweet-hide a { color: transparent !important; }
+        .tweet-hide img { opacity: 0 !important; }
+      `}</style>
+
+      {/* Full screen fixed overlay */}
       {!showContent && (
         <div style={{
           position: "fixed",
@@ -159,7 +166,6 @@ export default function Feed() {
           flexDirection: "column",
           alignItems: "center",
           padding: "80px 24px 40px",
-          overflowY: "auto",
         }}>
           <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", marginBottom: "16px" }}>
             <h2 style={{ fontWeight: "bold", fontSize: "18px", color: "var(--foreground)" }}>
@@ -181,8 +187,6 @@ export default function Feed() {
           color: "var(--foreground)",
         }}
       >
-        <style>{".twitter-tweet { margin: 0 auto !important; width: 100% !important; }"}</style>
-
         {!isDesktop && (
           <div style={{ width: "100%", overflowX: "auto", paddingBottom: "12px", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", whiteSpace: "nowrap" }}>
@@ -193,7 +197,6 @@ export default function Feed() {
         )}
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", minWidth: 0 }}>
-
           <div style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 16px" }}>
             <h2 style={{ fontWeight: "bold", fontSize: "18px", color: "var(--foreground)" }}>
               On This Day — {MOCK_DATE}
@@ -202,13 +205,16 @@ export default function Feed() {
 
           <div style={{ width: "100%" }}>
             {sorted.map((t) => (
-              <div key={t.url} style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
-                <div style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
+              <div
+                key={t.url}
+                className={!showContent ? "tweet-hide" : ""}
+                style={{ width: "100%", maxWidth: "min(90vw, 680px)", margin: "0 auto 24px", display: "flex", flexDirection: "column", alignItems: "stretch" }}
+              >
+                <div style={{ color: showContent ? "var(--muted)" : "transparent", fontSize: "14px", marginBottom: "4px" }}>{t.year}</div>
                 <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: t.html }} />
               </div>
             ))}
           </div>
-
         </div>
 
         {isDesktop && (
