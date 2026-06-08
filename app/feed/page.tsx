@@ -47,7 +47,6 @@ export default function Feed() {
   useEffect(() => {
     const existing = document.getElementById("twitter-widgets-script");
     if (existing) existing.remove();
-
     const script = document.createElement("script");
     script.id = "twitter-widgets-script";
     script.src = "https://platform.twitter.com/widgets.js";
@@ -82,25 +81,41 @@ export default function Feed() {
   );
 
   const viewSelect = (
-    <select
-      value={view}
-      onChange={(e) => setView(e.target.value)}
-      style={{
-        width: "100%",
-        padding: "8px",
-        borderRadius: 0,
-        border: "1px solid var(--border)",
-        backgroundColor: "var(--background)",
-        color: "var(--foreground)",
-        fontSize: "14px",
-      }}
-    >
-      <option value="on-this-day">On This Day</option>
-    </select>
+    <div style={{ position: "relative", width: "100%" }}>
+      <select
+        value={view}
+        onChange={(e) => setView(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "10px 40px 10px 16px",
+          borderRadius: "9999px",
+          border: "1px solid var(--border)",
+          backgroundColor: "var(--background)",
+          color: "var(--foreground)",
+          fontSize: "14px",
+          appearance: "none",
+          WebkitAppearance: "none",
+          cursor: "pointer",
+        }}
+      >
+        <option value="on-this-day">On This Day</option>
+      </select>
+      <div style={{
+        position: "absolute",
+        right: "16px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        pointerEvents: "none",
+        color: "var(--muted)",
+        fontSize: "10px",
+      }}>
+        ▼
+      </div>
+    </div>
   );
 
   const dateSort = (
-    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
       <span style={{ fontSize: "14px", fontWeight: "bold", color: "var(--foreground)", whiteSpace: "nowrap" }}>
         Date:
       </span>
@@ -170,12 +185,14 @@ export default function Feed() {
         backgroundColor: "var(--background)",
         color: "var(--foreground)",
       }}>
+
+        {/* Mobile filter bar — stacked */}
         {!isDesktop && (
-          <div style={{ width: "100%", overflowX: "auto", paddingBottom: "12px", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", whiteSpace: "nowrap" }}>
-              <div style={{ flexShrink: 0, minWidth: "160px" }}>{viewSelect}</div>
-              {dateSort}
+          <div style={{ width: "100%", marginBottom: "16px", paddingBottom: "12px", borderBottom: "1px solid var(--border)" }}>
+            <div style={{ marginBottom: "10px" }}>
+              {viewSelect}
             </div>
+            {dateSort}
           </div>
         )}
 
@@ -196,6 +213,7 @@ export default function Feed() {
           </div>
         </div>
 
+        {/* Desktop sidebar */}
         {isDesktop && (
           <aside style={{ width: "240px", flexShrink: 0, padding: "24px 20px 20px 20px", borderLeft: "1px solid var(--border)" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
